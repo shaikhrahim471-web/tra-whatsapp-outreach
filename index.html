@@ -5,375 +5,334 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TRA WhatsApp Sender</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #0f1117;
-    color: #e8e8e8;
-    min-height: 100vh;
-    padding: 24px;
-  }
-  h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 4px;
-  }
-  .subtitle {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 28px;
-  }
-  .card {
-    background: #1a1d27;
-    border: 1px solid #2a2d3a;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  label {
-    display: block;
-    font-size: 12px;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 8px;
-    font-weight: 500;
-  }
-  textarea {
-    width: 100%;
-    background: #0f1117;
-    border: 1px solid #2a2d3a;
-    border-radius: 8px;
-    color: #e8e8e8;
-    font-size: 13px;
-    padding: 12px;
-    resize: vertical;
-    font-family: inherit;
-    line-height: 1.5;
-  }
-  textarea:focus { outline: none; border-color: #25d366; }
-  .hint {
-    font-size: 11px;
-    color: #555;
-    margin-top: 6px;
-  }
-  .counter {
-    font-size: 12px;
-    color: #555;
-    margin-bottom: 16px;
-  }
-  .counter span { color: #25d366; font-weight: 600; }
-  .contact-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .contact-row {
-    background: #0f1117;
-    border: 1px solid #2a2d3a;
-    border-radius: 10px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    transition: border-color 0.2s;
-  }
-  .contact-row.sent { border-color: #25d366; opacity: 0.5; }
-  .contact-row.error { border-color: #e74c3c; }
-  .contact-info { flex: 1; min-width: 0; }
-  .contact-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: #fff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .contact-meta {
-    font-size: 11px;
-    color: #555;
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .contact-phone {
-    font-size: 12px;
-    color: #25d366;
-    font-family: monospace;
-    white-space: nowrap;
-  }
-  .error-phone {
-    font-size: 12px;
-    color: #e74c3c;
-    font-family: monospace;
-    white-space: nowrap;
-  }
-  .btn {
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: none;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: opacity 0.2s;
-  }
-  .btn:hover { opacity: 0.85; }
-  .btn-green { background: #25d366; color: #000; }
-  .btn-gray { background: #2a2d3a; color: #888; cursor: default; }
-  .btn-parse {
-    background: #25d366;
-    color: #000;
-    padding: 10px 24px;
-    border-radius: 8px;
-    border: none;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-  .btn-parse:hover { opacity: 0.85; }
-  .preview-box {
-    background: #0f1117;
-    border: 1px solid #2a2d3a;
-    border-radius: 8px;
-    padding: 12px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: #ccc;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .badge-sent {
-    font-size: 10px;
-    background: #25d36622;
-    color: #25d366;
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-weight: 600;
-  }
-  .badge-error {
-    font-size: 10px;
-    background: #e74c3c22;
-    color: #e74c3c;
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-weight: 600;
-  }
-  .section-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #aaa;
-    margin-bottom: 12px;
-  }
-  .progress-bar {
-    height: 4px;
-    background: #2a2d3a;
-    border-radius: 2px;
-    margin-bottom: 16px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: #25d366;
-    border-radius: 2px;
-    transition: width 0.3s;
-  }
-  .empty-state {
-    text-align: center;
-    color: #444;
-    font-size: 13px;
-    padding: 32px 0;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; padding: 24px; }
+h1 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.subtitle { font-size: 13px; color: #666; margin-bottom: 28px; }
+.card { background: #1a1d27; border: 1px solid #2a2d3a; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+label { display: block; font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; font-weight: 500; }
+textarea { width: 100%; background: #0f1117; border: 1px solid #2a2d3a; border-radius: 8px; color: #e8e8e8; font-size: 13px; padding: 12px; resize: vertical; font-family: inherit; line-height: 1.5; }
+textarea:focus { outline: none; border-color: #25d366; }
+input[type="text"] { width: 100%; background: #0f1117; border: 1px solid #2a2d3a; border-radius: 6px; color: #e8e8e8; font-size: 13px; padding: 8px 10px; font-family: inherit; }
+input[type="text"]:focus { outline: none; border-color: #25d366; }
+select { background: #0f1117; border: 1px solid #2a2d3a; border-radius: 6px; color: #e8e8e8; font-size: 12px; padding: 6px 8px; font-family: inherit; cursor: pointer; }
+.hint { font-size: 11px; color: #555; margin-top: 6px; }
+.counter { font-size: 12px; color: #555; margin-bottom: 16px; }
+.counter span { color: #25d366; font-weight: 600; }
+.contact-list { display: flex; flex-direction: column; gap: 10px; }
+
+/* Contact Row */
+.contact-row { background: #0f1117; border: 1px solid #2a2d3a; border-radius: 10px; padding: 14px 16px; transition: border-color 0.2s; }
+.contact-row.sent { border-color: #25d366; opacity: 0.6; }
+.contact-row.low-conf { border-color: #e74c3c33; }
+.contact-row-main { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.contact-info { flex: 1; min-width: 0; }
+.contact-name { font-size: 14px; font-weight: 600; color: #fff; }
+.contact-designation { font-size: 11px; color: #888; margin-top: 1px; }
+.contact-meta { font-size: 11px; color: #555; margin-top: 3px; }
+.contact-phone { font-size: 12px; color: #25d366; font-family: monospace; white-space: nowrap; }
+.error-phone { font-size: 12px; color: #e74c3c; font-family: monospace; white-space: nowrap; }
+
+/* Badges */
+.badges { display: flex; align-items: center; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+.badge { font-size: 10px; border-radius: 4px; padding: 2px 7px; font-weight: 600; white-space: nowrap; }
+.badge-high { background: #25d36622; color: #25d366; }
+.badge-medium { background: #f39c1222; color: #f39c12; }
+.badge-low { background: #e74c3c22; color: #e74c3c; }
+.badge-sent { background: #25d36622; color: #25d366; }
+.badge-ai { background: #3d4a6b; color: #8fa8d4; }
+.badge-verified { background: #1a3d2b; color: #25d366; }
+
+/* Buttons */
+.btn { padding: 8px 14px; border-radius: 8px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-green { background: #25d366; color: #000; }
+.btn-gray { background: #2a2d3a; color: #666; cursor: default; }
+.btn-edit { background: #2a2d3a; color: #aaa; font-size: 11px; padding: 6px 10px; }
+.btn-save { background: #25d366; color: #000; font-size: 11px; padding: 6px 12px; }
+.btn-cancel { background: #1a1d27; color: #666; font-size: 11px; padding: 6px 10px; border: 1px solid #2a2d3a; }
+.btn-parse { background: #25d366; color: #000; padding: 10px 24px; border-radius: 8px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 12px; }
+.btn-parse:hover { opacity: 0.85; }
+
+/* Actions group */
+.contact-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* Edit Panel */
+.edit-panel { margin-top: 14px; padding-top: 14px; border-top: 1px solid #2a2d3a; display: none; }
+.edit-panel.open { display: block; }
+.edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.edit-field label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 500; }
+.edit-row-buttons { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+.conf-select-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 500; }
+
+/* Progress */
+.progress-bar { height: 4px; background: #2a2d3a; border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+.progress-fill { height: 100%; background: #25d366; border-radius: 2px; transition: width 0.3s; }
+
+/* Filter row */
+.filter-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.filter-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid #2a2d3a; background: transparent; color: #666; font-size: 11px; cursor: pointer; transition: all 0.2s; }
+.filter-btn.active { background: #25d366; color: #000; border-color: #25d366; font-weight: 600; }
 </style>
 </head>
 <body>
 
 <h1>TRA WhatsApp Sender</h1>
-<p class="subtitle">Paste your contacts, preview messages, open WhatsApp Web one by one.</p>
+<p class="subtitle">Paste contacts, review, verify, and send — one by one.</p>
 
-<!-- Step 1: Paste Data -->
+<!-- Step 1 -->
 <div class="card">
   <label>Step 1 — Paste Contact Data (from Excel)</label>
-  <textarea id="rawData" rows="8" placeholder="Brand name	Category	Name	Phone number
-MANISH MALHOTRA	DESIGNERWEAR - LUXURY	Sahil Ramchandani	9.19097E+11
-VISA	CREDIT CARD NETWORK	Gaurav Ramdev	+91 82187 70175
-..."></textarea>
-  <p class="hint">Paste directly from Excel — tab-separated, scientific notation phone numbers are handled automatically.</p>
-  <br>
+  <textarea id="rawData" rows="7" placeholder="Brand name	Category	Name	Designation	Confidence	Phone number
+MANISH MALHOTRA	DESIGNERWEAR - LUXURY	Sahil Ramchandani	CMO	High	9.19097E+11
+VISA	CREDIT CARD NETWORK	Gaurav Ramdev	VP Marketing	Medium	+91 82187 70175
+
+Note: Designation and Confidence columns are optional. If not present, paste 4 columns as before."></textarea>
+  <p class="hint">Supports 4-column (Brand, Category, Name, Phone) or 6-column (+ Designation, Confidence) format.</p>
   <button class="btn-parse" onclick="parseData()">Parse Contacts →</button>
 </div>
 
-<!-- Step 2: Preview Message -->
+<!-- Step 2: Preview -->
 <div class="card" id="previewCard" style="display:none">
   <label>Step 2 — Message Preview</label>
-  <div class="preview-box" id="previewBox"></div>
-  <p class="hint" style="margin-top:8px;">This is what will be sent to each contact (name and brand filled in automatically).</p>
+  <div style="background:#0f1117;border:1px solid #2a2d3a;border-radius:8px;padding:12px;font-size:13px;line-height:1.6;color:#ccc;white-space:pre-wrap;word-break:break-word;" id="previewBox"></div>
 </div>
 
 <!-- Step 3: Send -->
 <div class="card" id="sendCard" style="display:none">
-  <label>Step 3 — Send Messages</label>
+  <label>Step 3 — Review & Send</label>
   <div class="counter" id="counterText"></div>
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('high', this)">🟢 High</button>
+    <button class="filter-btn" onclick="setFilter('medium', this)">🟡 Medium</button>
+    <button class="filter-btn" onclick="setFilter('low', this)">🔴 Low</button>
+    <button class="filter-btn" onclick="setFilter('verified', this)">✓ Verified by me</button>
+    <button class="filter-btn" onclick="setFilter('pending', this)">Not sent</button>
+  </div>
+
   <div class="contact-list" id="contactList"></div>
 </div>
 
 <script>
 let contacts = [];
 let sentCount = 0;
+let currentFilter = 'all';
 
 function fixPhone(raw) {
   if (!raw) return null;
   let s = String(raw).trim();
-
-  // Handle scientific notation like 9.19097E+11
   if (/\d+\.?\d*[eE][+\-]?\d+/.test(s)) {
     let num = parseFloat(s);
     if (!isNaN(num)) s = Math.round(num).toString();
   }
-
-  // Remove spaces, dashes, brackets
-  s = s.replace(/[\s\-\(\)]/g, '');
-
-  // Remove leading + if present, we'll add it back
-  s = s.replace(/^\+/, '');
-
-  // If starts with 91 and length is 12, good
+  s = s.replace(/[\s\-\(\)]/g, '').replace(/^\+/, '');
   if (s.startsWith('91') && s.length === 12) return '+' + s;
-
-  // If 10 digits, add 91
   if (s.length === 10 && s.match(/^\d+$/)) return '+91' + s;
-
-  // If already has country code in another form
   if (s.length === 12 && s.match(/^\d+$/)) return '+' + s;
-
-  return null; // unresolvable
+  return null;
 }
 
-function getFirstName(fullName) {
-  if (!fullName) return '';
-  return fullName.trim().split(' ')[0];
-}
-
-function buildMessage(contact) {
-  const firstName = getFirstName(contact.name);
-  const brand = contact.brand;
-  const category = toTitleCase(contact.category);
-  return `Hi ${firstName}, I am Rahim reaching out from TRA Research, we are India's leading brand analytics and consumers buying intent measuring company. What we do is rank brands on the basis of Trust by conducting primary syndicated study in India. We have been doing this for the past 15 years and last month we have launched the 15th edition of Brand Trust Report 2026. As per this your brand ${brand} has been recognised as India's Most Trusted ${category} Brand 2026. And I personally wanted to share this insight with you.`;
-}
+function getFirstName(n) { return n ? n.trim().split(' ')[0] : ''; }
 
 function toTitleCase(str) {
   if (!str) return '';
-  return str.split(' ').map(w => {
-    if (['-', 'AND', '&'].includes(w)) return w;
-    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-  }).join(' ');
+  return str.split(' ').map(w => ['-','AND','&'].includes(w) ? w : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+function buildMessage(c) {
+  return "Hi " + getFirstName(c.name) + ", I am Rahim reaching out from TRA Research, we are India's leading brand analytics and consumers buying intent measuring company. What we do is rank brands on the basis of Trust by conducting primary syndicated study in India. We have been doing this for the past 15 years and last month we have launched the 15th edition of Brand Trust Report 2026. As per this your brand " + c.brand + " has been recognised as India's Most Trusted " + toTitleCase(c.category) + " Brand 2026. And I personally wanted to share this insight with you.";
 }
 
 function parseData() {
   const raw = document.getElementById('rawData').value.trim();
   if (!raw) { alert('Please paste your contact data first.'); return; }
-
   const lines = raw.split('\n').filter(l => l.trim());
   contacts = [];
-
-  // Skip header row
-  const startIdx = lines[0].toLowerCase().includes('brand') ? 1 : 0;
+  const firstLine = lines[0].toLowerCase();
+  const startIdx = firstLine.includes('brand') || firstLine.includes('name') ? 1 : 0;
 
   for (let i = startIdx; i < lines.length; i++) {
     const cols = lines[i].split('\t');
     if (cols.length < 4) continue;
-
+    const is6col = cols.length >= 6;
     const brand = cols[0]?.trim();
     const category = cols[1]?.trim();
     const name = cols[2]?.trim();
-    const phoneRaw = cols[3]?.trim();
+    let designation = '', confidence = 'medium', phoneRaw = '';
+    if (is6col) {
+      designation = cols[3]?.trim() || '';
+      confidence = (cols[4]?.trim() || 'medium').toLowerCase();
+      phoneRaw = cols[5]?.trim() || '';
+    } else {
+      phoneRaw = cols[3]?.trim() || '';
+    }
     const phone = fixPhone(phoneRaw);
-
-    contacts.push({ brand, category, name, phoneRaw, phone, sent: false });
+    if (!['high','medium','low'].includes(confidence)) confidence = 'medium';
+    contacts.push({ brand, category, name, designation, confidence, phoneRaw, phone, sent: false, source: 'ai', editOpen: false });
   }
 
-  if (contacts.length === 0) { alert('No contacts found. Make sure data is tab-separated.'); return; }
-
+  if (!contacts.length) { alert('No contacts found. Make sure data is tab-separated.'); return; }
   renderPreview();
   renderContacts();
-
   document.getElementById('previewCard').style.display = 'block';
   document.getElementById('sendCard').style.display = 'block';
   document.getElementById('previewCard').scrollIntoView({ behavior: 'smooth' });
 }
 
 function renderPreview() {
-  if (contacts.length === 0) return;
-  const sample = contacts[0];
-  document.getElementById('previewBox').textContent = buildMessage(sample);
+  if (contacts.length) document.getElementById('previewBox').textContent = buildMessage(contacts[0]);
+}
+
+function confBadgeHTML(conf) {
+  const map = { high: ['badge-high','🟢 High Confidence'], medium: ['badge-medium','🟡 Medium Confidence'], low: ['badge-low','🔴 Low Confidence'] };
+  const [cls, label] = map[conf] || map.medium;
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function sourceBadgeHTML(source) {
+  return source === 'verified'
+    ? `<span class="badge badge-verified">✓ Verified by you</span>`
+    : `<span class="badge badge-ai">AI Research</span>`;
 }
 
 function renderContacts() {
   const list = document.getElementById('contactList');
   list.innerHTML = '';
-  sentCount = 0;
+  sentCount = contacts.filter(c => c.sent).length;
   updateCounter();
 
   contacts.forEach((c, i) => {
+    if (!matchesFilter(c)) return;
+
     const row = document.createElement('div');
-    row.className = 'contact-row' + (c.sent ? ' sent' : c.phone ? '' : ' error');
+    row.className = 'contact-row' + (c.sent ? ' sent' : c.confidence === 'low' ? ' low-conf' : '');
     row.id = 'row-' + i;
 
     const phoneDisplay = c.phone
       ? `<span class="contact-phone">${c.phone}</span>`
-      : `<span class="error-phone">⚠ Can't parse: ${c.phoneRaw}</span>`;
+      : `<span class="error-phone">⚠ Can't parse</span>`;
 
-    const btn = c.phone
+    const sendBtn = c.phone && !c.sent
       ? `<button class="btn btn-green" onclick="openWhatsApp(${i})">Open WhatsApp</button>`
-      : `<button class="btn btn-gray" disabled>No number</button>`;
-
-    const badge = c.sent ? '<span class="badge-sent">✓ Opened</span>' : '';
+      : c.sent
+        ? `<button class="btn btn-gray" disabled>✓ Sent</button>`
+        : `<button class="btn btn-gray" disabled>No number</button>`;
 
     row.innerHTML = `
-      <div class="contact-info">
-        <div class="contact-name">${c.name} ${badge}</div>
-        <div class="contact-meta">${c.brand} · ${toTitleCase(c.category)}</div>
+      <div class="contact-row-main">
+        <div class="contact-info">
+          <div class="contact-name">${c.name}</div>
+          ${c.designation ? `<div class="contact-designation">${c.designation}</div>` : ''}
+          <div class="contact-meta">${c.brand} · ${toTitleCase(c.category)}</div>
+          <div class="badges">
+            ${confBadgeHTML(c.confidence)}
+            ${sourceBadgeHTML(c.source)}
+            ${c.sent ? '<span class="badge badge-sent">✓ Message Opened</span>' : ''}
+          </div>
+        </div>
+        <div class="contact-actions">
+          ${phoneDisplay}
+          <button class="btn btn-edit" onclick="toggleEdit(${i})">✎ Edit</button>
+          ${sendBtn}
+        </div>
       </div>
-      ${phoneDisplay}
-      ${btn}
+      <div class="edit-panel ${c.editOpen ? 'open' : ''}" id="edit-${i}">
+        <div class="edit-grid">
+          <div class="edit-field">
+            <label>Name</label>
+            <input type="text" id="edit-name-${i}" value="${c.name}">
+          </div>
+          <div class="edit-field">
+            <label>Designation</label>
+            <input type="text" id="edit-desig-${i}" value="${c.designation || ''}">
+          </div>
+          <div class="edit-field">
+            <label>Phone Number</label>
+            <input type="text" id="edit-phone-${i}" value="${c.phoneRaw || ''}">
+          </div>
+          <div class="edit-field">
+            <label>Confidence</label>
+            <select id="edit-conf-${i}">
+              <option value="high" ${c.confidence==='high'?'selected':''}>🟢 High</option>
+              <option value="medium" ${c.confidence==='medium'?'selected':''}>🟡 Medium</option>
+              <option value="low" ${c.confidence==='low'?'selected':''}>🔴 Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="edit-row-buttons">
+          <button class="btn btn-save" onclick="saveEdit(${i})">Save & Mark as Verified</button>
+          <button class="btn btn-cancel" onclick="cancelEdit(${i})">Cancel</button>
+        </div>
+      </div>
     `;
     list.appendChild(row);
   });
 }
 
+function matchesFilter(c) {
+  if (currentFilter === 'all') return true;
+  if (currentFilter === 'high') return c.confidence === 'high';
+  if (currentFilter === 'medium') return c.confidence === 'medium';
+  if (currentFilter === 'low') return c.confidence === 'low';
+  if (currentFilter === 'verified') return c.source === 'verified';
+  if (currentFilter === 'pending') return !c.sent;
+  return true;
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderContacts();
+}
+
+function toggleEdit(i) {
+  contacts[i].editOpen = !contacts[i].editOpen;
+  renderContacts();
+}
+
+function cancelEdit(i) {
+  contacts[i].editOpen = false;
+  renderContacts();
+}
+
+function saveEdit(i) {
+  const name = document.getElementById('edit-name-' + i).value.trim();
+  const desig = document.getElementById('edit-desig-' + i).value.trim();
+  const phoneRaw = document.getElementById('edit-phone-' + i).value.trim();
+  const conf = document.getElementById('edit-conf-' + i).value;
+
+  contacts[i].name = name || contacts[i].name;
+  contacts[i].designation = desig;
+  contacts[i].phoneRaw = phoneRaw;
+  contacts[i].phone = fixPhone(phoneRaw) || contacts[i].phone;
+  contacts[i].confidence = conf;
+  contacts[i].source = 'verified';
+  contacts[i].editOpen = false;
+  renderContacts();
+}
+
 function openWhatsApp(i) {
   const c = contacts[i];
   if (!c.phone) return;
-
-  const msg = encodeURIComponent(buildMessage(c));
-  const url = `https://web.whatsapp.com/send?phone=${c.phone.replace('+', '')}&text=${msg}`;
-
-  window.open(url, '_blank');
-
-  // Mark as opened
+  window.open('https://web.whatsapp.com/send?phone=' + c.phone.replace('+', '') + '&text=' + encodeURIComponent(buildMessage(c)), '_blank');
   contacts[i].sent = true;
   sentCount++;
-
-  const row = document.getElementById('row-' + i);
-  row.className = 'contact-row sent';
-  row.querySelector('.btn').className = 'btn btn-gray';
-  row.querySelector('.btn').textContent = '✓ Opened';
-  row.querySelector('.contact-name').innerHTML = `${c.name} <span class="badge-sent">✓ Opened</span>`;
-
-  updateCounter();
+  renderContacts();
 }
 
 function updateCounter() {
   const total = contacts.length;
   const valid = contacts.filter(c => c.phone).length;
   const invalid = total - valid;
+  const high = contacts.filter(c => c.confidence === 'high').length;
+  const verified = contacts.filter(c => c.source === 'verified').length;
   document.getElementById('counterText').innerHTML =
-    `<span>${sentCount}</span> opened · ${valid - sentCount} remaining · ${invalid > 0 ? `<span style="color:#e74c3c">${invalid} invalid numbers</span>` : ''}`;
+    `<span>${sentCount}</span> sent · ${valid - sentCount} remaining · ${high} high confidence · ${verified} verified by you` +
+    (invalid > 0 ? ` · <span style="color:#e74c3c">${invalid} no number</span>` : '');
   const pct = valid > 0 ? (sentCount / valid) * 100 : 0;
   document.getElementById('progressFill').style.width = pct + '%';
 }
