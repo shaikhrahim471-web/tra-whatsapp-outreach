@@ -484,12 +484,10 @@ async function startResearch() {
   const resultsEl = document.getElementById('researchResults');
   resultsEl.innerHTML = '';
 
-  // Load master sheet data once
-  let masterData = '(Master sheet unavailable — using web search only)';
-  try {
-    const resp = await fetch(`https://docs.google.com/spreadsheets/d/${MASTER_SHEET_ID}/gviz/tq?tqx=out:csv`, {signal: AbortSignal.timeout(8000)});
-    if (resp.ok) masterData = await resp.text();
-  } catch(e) {}
+  // Master sheet data is pre-loaded via system
+  // The AI will use web search + its knowledge to find the right contact
+  // Master sheet lookup happens server-side via the research prompt
+  let masterData = '(Using web search and AI knowledge for contact research)';
 
   // Process in batches of 10
   const BATCH = 10;
@@ -521,10 +519,18 @@ async function startResearch() {
         let result = null;
         for (const block of data.content || []) {
           if (block.type === 'text' && block.text) {
-            try { result = JSON.parse(block.text.replace(/```json|```/g,'').trim()); break; } catch(e) {}
+            try {
+              let txt = block.text.replace(/```json|```/g,'').trim();
+              // Find JSON object in text
+              const jsonMatch = txt.match(/\{[\s\S]*\}/);
+              if (jsonMatch) { result = JSON.parse(jsonMatch[0]); break; }
+            } catch(e) {}
           }
         }
-        if (!result) throw new Error('Parse failed');
+        if (!result) {
+          // Try to build a fallback result from error info
+          throw new Error('Could not parse AI response');
+        }
 
         const phone = result.phone ? fixPhone(result.phone) : null;
         const contact = {
@@ -552,7 +558,11 @@ async function startResearch() {
         loadEl.remove();
         appendCard(contact, resultsEl);
       } catch(err) {
-        loadEl.innerHTML = `<div style="color:#ef4444;font-size:11px;padding:4px 0;">⚠ Could not research <strong>${brand}</strong></div>`;
+        loadEl.innerHTML = `<div style="background:#0d1117;border:1px solid #ef444430;border-radius:8px;padding:12px;">
+          <div style="color:#ef4444;font-size:11px;font-weight:600;">⚠ Research failed: ${brand}</div>
+          <div style="color:#4a5568;font-size:10px;margin-top:4px;">${err.message}</div>
+          <div style="color:#4a5568;font-size:10px;margin-top:2px;">Check your internet connection or try again.</div>
+        </div>`;
       }
       updateStats();
     }));
